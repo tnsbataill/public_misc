@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lease vs Finance — Full Stack Analysis</title>
+  <title>Lease vs Finance — Value Analysis</title>
   <script>/**
  * @license React
  * react.production.min.js
@@ -309,15 +309,15 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   <div id="root"></div>
 
   <script>const { useState, useMemo } = React;
-const FONT = `@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap');`;
+const FONT = `@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Poppins:wght@400;600;700;800&display=swap');`;
 const css = `
       ${FONT}
       * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { background: #0a0a0a; }
+      body { background: #141413; }
       .app {
-        font-family: 'Syne', sans-serif;
-        background: #0d0d0f;
-        color: #e8e4dc;
+        font-family: 'Poppins', sans-serif;
+        background: #18161a;
+        color: #e8e0d8;
         min-height: 100vh;
         padding: 32px 20px 60px;
       }
@@ -326,20 +326,20 @@ const css = `
         font-size: clamp(24px, 5vw, 40px);
         font-weight: 800;
         letter-spacing: -1px;
-        color: #f0ece4;
+        color: #faf9f5;
         line-height: 1.1;
       }
-      .header h1 span { color: #c8f55a; }
+      .header h1 span { color: #d97757; }
       .header p {
         margin-top: 10px;
         font-size: 12px;
-        color: #555;
+        color: #776e66;
         font-family: 'DM Mono', monospace;
         letter-spacing: 0.06em;
       }
       .controls {
-        background: #141416;
-        border: 1px solid #222;
+        background: #1e1c1a;
+        border: 1px solid #2a2726;
         border-radius: 16px;
         padding: 26px 28px;
         margin-bottom: 28px;
@@ -350,7 +350,7 @@ const css = `
       .controls-title {
         font-size: 10px;
         font-family: 'DM Mono', monospace;
-        color: #444;
+        color: #554e48;
         letter-spacing: 0.18em;
         text-transform: uppercase;
         margin-bottom: 20px;
@@ -364,7 +364,7 @@ const css = `
         display: block;
         font-size: 10px;
         font-family: 'DM Mono', monospace;
-        color: #555;
+        color: #6b6560;
         margin-bottom: 6px;
         letter-spacing: 0.1em;
         text-transform: uppercase;
@@ -372,14 +372,14 @@ const css = `
       .control-item .val {
         font-size: 20px;
         font-weight: 700;
-        color: #c8f55a;
+        color: #d97757;
         margin-bottom: 7px;
         font-family: 'DM Mono', monospace;
         line-height: 1;
       }
       .control-item .val-sub {
         font-size: 10px;
-        color: #444;
+        color: #554e48;
         font-family: 'DM Mono', monospace;
         margin-bottom: 7px;
       }
@@ -387,7 +387,7 @@ const css = `
         width: 100%;
         -webkit-appearance: none;
         height: 3px;
-        background: #2a2a2e;
+        background: #332e2a;
         border-radius: 2px;
         outline: none;
         cursor: pointer;
@@ -395,7 +395,7 @@ const css = `
       input[type=range]::-webkit-slider-thumb {
         -webkit-appearance: none;
         width: 13px; height: 13px;
-        background: #c8f55a;
+        background: #d97757;
         border-radius: 50%;
         cursor: pointer;
       }
@@ -403,10 +403,10 @@ const css = `
       .diy-btn {
         flex: 1;
         padding: 7px 2px;
-        border: 1px solid #2a2a2e;
+        border: 1px solid #332e2a;
         border-radius: 7px;
         background: transparent;
-        color: #555;
+        color: #665f58;
         font-family: 'DM Mono', monospace;
         font-size: 10px;
         cursor: pointer;
@@ -414,9 +414,9 @@ const css = `
         letter-spacing: 0.04em;
       }
       .diy-btn.active {
-        background: #1a1f0e;
-        border-color: #c8f55a;
-        color: #c8f55a;
+        background: #200f0a;
+        border-color: #d97757;
+        color: #d97757;
       }
       .section-max { max-width: 900px; margin: 0 auto; }
 
@@ -430,12 +430,12 @@ const css = `
       .group-label {
         font-size: 10px;
         font-family: 'DM Mono', monospace;
-        color: #444;
+        color: #554e48;
         letter-spacing: 0.18em;
         text-transform: uppercase;
         white-space: nowrap;
       }
-      .group-line { flex: 1; height: 1px; background: #1e1e22; }
+      .group-line { flex: 1; height: 1px; background: #252220; }
 
       .scenario-grid {
         display: grid;
@@ -445,45 +445,45 @@ const css = `
       }
 
       .scenario-card {
-        background: #141416;
-        border: 1px solid #222;
+        background: #1e1c1a;
+        border: 1px solid #2a2726;
         border-radius: 13px;
         padding: 18px 16px;
         position: relative;
         overflow: hidden;
         border-left-width: 3px;
       }
-      .scenario-card.is-best { background: #0f1208; border-color: #c8f55a; }
+      .scenario-card.is-best { background: #1e120a; border-color: #d97757; }
       .best-badge {
         position: absolute; top: 10px; right: 10px;
         font-size: 8px; font-family: 'DM Mono', monospace;
-        letter-spacing: 0.14em; color: #c8f55a;
-        background: #1a2208; padding: 2px 6px;
-        border-radius: 3px; border: 1px solid #c8f55a33;
+        letter-spacing: 0.14em; color: #d97757;
+        background: #2a1408; padding: 2px 6px;
+        border-radius: 3px; border: 1px solid #d9775733;
       }
       .rank-badge {
         position: absolute; top: 10px; right: 10px;
         font-size: 13px; font-weight: 600; font-family: 'DM Mono', monospace;
         color: #6a6a6a;
       }
-      .sc-label { font-size: 9px; font-family: 'DM Mono', monospace; color: #444; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; }
-      .sc-name { font-size: 15px; font-weight: 700; line-height: 1.2; margin-bottom: 2px; }
-      .sc-sub { font-size: 10px; color: #444; font-family: 'DM Mono', monospace; margin-bottom: 12px; line-height: 1.4; }
+      .sc-label { font-size: 9px; font-family: 'DM Mono', monospace; color: #554e48; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; min-height: 3em; }
+      .sc-name { font-size: 15px; font-weight: 700; line-height: 1.2; margin-bottom: 2px; min-height: 2.5em; }
+      .sc-sub { font-size: 10px; color: #554e48; font-family: 'DM Mono', monospace; margin-bottom: 12px; line-height: 1.4; min-height: 2.8em; }
       .sc-nw { font-size: 20px; font-weight: 800; font-family: 'DM Mono', monospace; letter-spacing: -0.5px; white-space: nowrap; }
-      .sc-nw.pos { color: #c8f55a; }
-      .sc-nw.mid { color: #ffc44d; }
-      .sc-nw.neg { color: #ff6b6b; }
-      .sc-nw-label { font-size: 9px; font-family: 'DM Mono', monospace; color: #444; margin-top: 2px; margin-bottom: 12px; }
-      .sc-rows { border-top: 1px solid #1e1e22; padding-top: 10px; }
+      .sc-nw.pos { color: #d97757; }
+      .sc-nw.mid { color: #c89a5a; }
+      .sc-nw.neg { color: #c05050; }
+      .sc-nw-label { font-size: 9px; font-family: 'DM Mono', monospace; color: #554e48; margin-top: 2px; margin-bottom: 12px; }
+      .sc-rows { border-top: 1px solid #252220; padding-top: 10px; }
       .sc-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
-      .sc-row-l { font-size: 10px; color: #444; font-family: 'DM Mono', monospace; }
-      .sc-row-v { font-size: 11px; font-family: 'DM Mono', monospace; color: #666; }
-      .sc-row-v.g { color: #c8f55a; }
-      .sc-row-v.r { color: #ff6b6b; }
+      .sc-row-l { font-size: 10px; color: #554e48; font-family: 'DM Mono', monospace; }
+      .sc-row-v { font-size: 11px; font-family: 'DM Mono', monospace; color: #776e66; }
+      .sc-row-v.g { color: #d97757; }
+      .sc-row-v.r { color: #c05050; }
 
       .chart-section {
-        background: #141416;
-        border: 1px solid #222;
+        background: #1e1c1a;
+        border: 1px solid #2a2726;
         border-radius: 14px;
         padding: 22px;
         margin-bottom: 24px;
@@ -493,70 +493,70 @@ const css = `
       .section-label {
         font-size: 10px;
         font-family: 'DM Mono', monospace;
-        color: #444;
+        color: #554e48;
         letter-spacing: 0.15em;
         text-transform: uppercase;
         margin-bottom: 16px;
       }
       .chart-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
-      .legend-item { display: flex; align-items: center; gap: 7px; font-size: 10px; font-family: 'DM Mono', monospace; color: #666; }
+      .legend-item { display: flex; align-items: center; gap: 7px; font-size: 10px; font-family: 'DM Mono', monospace; color: #776e66; }
       .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
 
       .crossover-section {
-        background: #141416;
-        border: 1px solid #222;
+        background: #1e1c1a;
+        border: 1px solid #2a2726;
         border-radius: 14px;
         padding: 22px;
         margin-bottom: 24px;
       }
       .crossover-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
-      .cx-item { background: #0d0d0f; border: 1px solid #1e1e22; border-radius: 10px; padding: 14px 16px; }
-      .cx-big { font-size: 30px; font-weight: 800; font-family: 'DM Mono', monospace; color: #c8f55a; letter-spacing: -1px; }
-      .cx-big small { font-size: 14px; font-weight: 400; color: #555; letter-spacing: 0; }
-      .cx-desc { font-size: 10px; color: #555; font-family: 'DM Mono', monospace; margin-top: 4px; line-height: 1.5; }
+      .cx-item { background: #141211; border: 1px solid #252220; border-radius: 10px; padding: 14px 16px; }
+      .cx-big { font-size: 30px; font-weight: 800; font-family: 'DM Mono', monospace; color: #d97757; letter-spacing: -1px; }
+      .cx-big small { font-size: 14px; font-weight: 400; color: #665f58; letter-spacing: 0; }
+      .cx-desc { font-size: 10px; color: #665f58; font-family: 'DM Mono', monospace; margin-top: 4px; line-height: 1.5; }
 
       .down-note {
-        background: #14100a;
-        border: 1px solid #33280a;
+        background: #1a1008;
+        border: 1px solid #2d1c0a;
         border-radius: 10px;
         padding: 12px 16px;
         margin-bottom: 24px;
         font-size: 11px;
         font-family: 'DM Mono', monospace;
-        color: #886633;
+        color: #8a6644;
         line-height: 1.6;
       }
-      .down-note strong { color: #ffc44d; }
+      .down-note strong { color: #c89a5a; }
 
       .assumptions-box {
-        background: #0d1014;
-        border: 1px solid #1a2230;
+        background: #161412;
+        border: 1px solid #252220;
         border-radius: 10px;
         padding: 14px 18px;
         margin-bottom: 24px;
         font-size: 10px;
         font-family: 'DM Mono', monospace;
-        color: #445566;
+        color: #554e48;
         line-height: 1.8;
       }
-      .assumptions-box strong { color: #5588aa; }
+      .assumptions-box strong { color: #b0aea5; }
 
       .rule-box {
-        background: #0d0d0f;
-        border: 1px solid #1e1e22;
+        background: #141211;
+        border: 1px solid #252220;
         border-radius: 12px;
         padding: 20px;
         margin-bottom: 24px;
       }
       .rule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 2px; }
-      .rule-item { background: #141416; padding: 14px 16px; border-radius: 8px; }
-      .rule-years { font-size: 10px; font-family: 'DM Mono', monospace; color: #555; margin-bottom: 4px; }
+      .rule-item { background: #1e1c1a; padding: 14px 16px; border-radius: 8px; }
+      .rule-years { font-size: 10px; font-family: 'DM Mono', monospace; color: #665f58; margin-bottom: 4px; }
       .rule-verdict { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
-      .rule-note { font-size: 10px; font-family: 'DM Mono', monospace; color: #555; line-height: 1.4; }
-      .vc-lease { color: #5abff5; }
-      .vc-toss  { color: #ffc44d; }
-      .vc-buy   { color: #c8f55a; }
-      .vc-cpo   { color: #ff9f5a; }
+      .rule-note { font-size: 10px; font-family: 'DM Mono', monospace; color: #665f58; line-height: 1.4; }
+      .vc-lease { color: #6a9bcc; }
+      .vc-toss  { color: #c89a5a; }
+      .vc-buy   { color: #a3b876; }
+      .vc-cpo   { color: #d97757; }
     `;
 const fmt = (n) => {
   const a = Math.abs(n);
@@ -574,12 +574,13 @@ const loanPmt = (principal, annualRate, months) => {
   if (r === 0) return principal / months;
   return principal * (r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
 };
-function calcAll(carPrice, holdYears, loanRate, investRate, diyLevel, downPct, leaseTerm, maintPkgYears) {
+function calcAll(carPrice, holdYears, loanRate, investRate, diyLevel, downPct, leaseTerm, maintPkgYears, annualMiles) {
   const mr = investRate / 100 / 12;
   const months = holdYears * 12;
   const loanMonths = 60;
-  const diyAnnual = { none: 1600, basic: 1100, moderate: 600, full: 200 }[diyLevel];
-  const dealerAnnual = 1600;
+  const maintMilesMult = annualMiles / 12000;
+  const diyAnnual = { none: 1600, basic: 1100, moderate: 600, full: 200 }[diyLevel] * maintMilesMult;
+  const dealerAnnual = 1600 * maintMilesMult;
   const diyMo = diyAnnual / 12;
   const dealerMo = dealerAnnual / 12;
   const maintSaveMo = dealerMo - diyMo;
@@ -591,8 +592,10 @@ function calcAll(carPrice, holdYears, loanRate, investRate, diyLevel, downPct, l
   const pmtCPO = loanPmt(cpoPrice - downCPO, loanRate, loanMonths);
   const leaseNewFactor = leaseTerm === 24 ? 0.015 : leaseTerm === 48 ? 0.0105 : 0.0122;
   const leaseCPOFactor = leaseTerm === 24 ? 0.013 : leaseTerm === 48 ? 9e-3 : 0.0105;
-  const leaseNewMo = newPrice * leaseNewFactor;
-  const leaseCPOMo = cpoPrice * leaseCPOFactor;
+  // Mileage overage on lease (base 12k/yr, $0.20/mi over)
+  const leaseOverageMo = Math.max(0, (annualMiles - 12000) / 12 * 0.20);
+  const leaseNewMo = newPrice * leaseNewFactor + leaseOverageMo;
+  const leaseCPOMo = cpoPrice * leaseCPOFactor + leaseOverageMo;
   const leaseSignFee = 1200;
   const maintPkgMonths = maintPkgYears * 12;
   const refMo = pmtNew + dealerMo;
@@ -630,20 +633,6 @@ function calcAll(carPrice, holdYears, loanRate, investRate, diyLevel, downPct, l
   const s3 = simulate({
     down: downNew,
     monthlyPay: pmtNew,
-    maintFn: (m) => m <= maintPkgMonths ? 0 : dealerMo,
-    isLease: false,
-    lumpInvest: 0,
-    investExtra: (m) => {
-      const maintSav = m <= maintPkgMonths ? dealerMo : 0;
-      const freed = m > loanMonths ? pmtNew : 0;
-      return maintSav + freed;
-    }
-  });
-  const carValNew = carValueAt(newPrice, holdYears);
-  const nw3 = -s3.cashOut + carValNew + s3.portfolio - (downNewFV - downNew);
-  const s4 = simulate({
-    down: downNew,
-    monthlyPay: pmtNew,
     maintFn: (m) => m <= maintPkgMonths ? 0 : diyMo,
     isLease: false,
     lumpInvest: 0,
@@ -653,18 +642,9 @@ function calcAll(carPrice, holdYears, loanRate, investRate, diyLevel, downPct, l
       return maintSav + freed;
     }
   });
-  const nw4 = -s4.cashOut + carValNew + s4.portfolio - (downNewFV - downNew);
+  const carValNew = carValueAt(newPrice, holdYears);
+  const nw3 = -s3.cashOut + carValNew + s3.portfolio - (downNewFV - downNew);
   const s5 = simulate({
-    down: downCPO,
-    monthlyPay: pmtCPO,
-    maintFn: dealerMo,
-    isLease: false,
-    lumpInvest: downNew - downCPO,
-    investExtra: (m) => m > loanMonths ? pmtNew : pmtNew - pmtCPO
-  });
-  const carValCPO = carValueAt(cpoPrice, holdYears);
-  const nw5 = -s5.cashOut + carValCPO + s5.portfolio - (downCPOFV - downCPO);
-  const s6 = simulate({
     down: downCPO,
     monthlyPay: pmtCPO,
     maintFn: diyMo,
@@ -672,24 +652,23 @@ function calcAll(carPrice, holdYears, loanRate, investRate, diyLevel, downPct, l
     lumpInvest: downNew - downCPO,
     investExtra: (m) => m > loanMonths ? refMo - diyMo : pmtNew - pmtCPO + maintSaveMo
   });
-  const nw6 = -s6.cashOut + carValCPO + s6.portfolio - (downCPOFV - downCPO);
+  const carValCPO = carValueAt(cpoPrice, holdYears);
+  const nw5 = -s5.cashOut + carValCPO + s5.portfolio - (downCPOFV - downCPO);
   return {
     scenarios: [
       { key: "ln", label: "Lease New", sub: "Dealer maint \xB7 invest gap + down lump", nw: nw1, cashOut: s1.cashOut, portfolio: s1.portfolio, saleProceeds: 0, isLease: true, renewals: Math.ceil(months / leaseTerm) - 1 },
-      { key: "lc", label: "Lease CPO", sub: "Cheaper lease \xB7 larger gap invested", nw: nw2, cashOut: s2.cashOut, portfolio: s2.portfolio, saleProceeds: 0, isLease: true, renewals: Math.ceil(months / leaseTerm) - 1 },
-      { key: "fn", label: "Finance New", sub: "Dealer maint \xB7 invest freed pmt at payoff", nw: nw3, cashOut: s3.cashOut, portfolio: s3.portfolio, saleProceeds: carValNew, isLease: false },
-      { key: "fnd", label: "Finance New + DIY", sub: "DIY savings invested \xB7 freed pmt after", nw: nw4, cashOut: s4.cashOut, portfolio: s4.portfolio, saleProceeds: carValNew, isLease: false },
-      { key: "fc", label: "Finance CPO", sub: "Payment gap invested \xB7 freed pmt after", nw: nw5, cashOut: s5.cashOut, portfolio: s5.portfolio, saleProceeds: carValCPO, isLease: false },
-      { key: "fcd", label: "Finance CPO + DIY", sub: "Max stack: all advantages compounding", nw: nw6, cashOut: s6.cashOut, portfolio: s6.portfolio, saleProceeds: carValCPO, isLease: false }
+      { key: "lc", label: "Lease CPO", sub: "Cheaper payment \xB7 larger surplus invested", nw: nw2, cashOut: s2.cashOut, portfolio: s2.portfolio, saleProceeds: 0, isLease: true, renewals: Math.ceil(months / leaseTerm) - 1 },
+      { key: "fn", label: "Finance New", sub: diyLevel !== "none" ? "DIY maint \xB7 invest freed pmt at payoff" : "Dealer maint \xB7 invest freed pmt at payoff", nw: nw3, cashOut: s3.cashOut, portfolio: s3.portfolio, saleProceeds: carValNew, isLease: false },
+      { key: "fc", label: "Finance CPO", sub: diyLevel !== "none" ? "CPO savings \xB7 DIY maint \xB7 all stacked" : "CPO savings \xB7 payment gap invested", nw: nw5, cashOut: s5.cashOut, portfolio: s5.portfolio, saleProceeds: carValCPO, isLease: false }
     ],
-    meta: { newPrice, cpoPrice, downNew, downCPO, pmtNew, pmtCPO, leaseNewMo, leaseCPOMo, refMo, diyAnnual, dealerAnnual, maintSaveMo: maintSaveMo * 12, leaseTerm }
+    meta: { newPrice, cpoPrice, downNew, downCPO, pmtNew, pmtCPO, leaseNewMo, leaseCPOMo, refMo, diyAnnual, dealerAnnual, maintSaveMo: maintSaveMo * 12, leaseTerm, annualMiles, leaseOverageMo }
   };
 }
-const COLORS = { ln: "#5abff5", lc: "#b08aff", fn: "#ff6b6b", fnd: "#ffc44d", fc: "#ff9f5a", fcd: "#c8f55a" };
-const KEYS = ["ln", "lc", "fn", "fnd", "fc", "fcd"];
-function buildChartData(carPrice, loanRate, investRate, diyLevel, downPct, leaseTerm, maintPkgYears) {
+const COLORS = { ln: "#6a9bcc", lc: "#b08aff", fn: "#d97757", fc: "#a3b876" };
+const KEYS = ["ln", "lc", "fn", "fc"];
+function buildChartData(carPrice, loanRate, investRate, diyLevel, downPct, leaseTerm, maintPkgYears, annualMiles) {
   return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((yr) => {
-    const { scenarios } = calcAll(carPrice, yr, loanRate, investRate, diyLevel, downPct, leaseTerm, maintPkgYears);
+    const { scenarios } = calcAll(carPrice, yr, loanRate, investRate, diyLevel, downPct, leaseTerm, maintPkgYears, annualMiles);
     const pt = { yr };
     scenarios.forEach((s) => {
       pt[s.key] = Math.round(s.nw);
@@ -719,13 +698,13 @@ function LineChart({ data, holdYears }) {
       d: path(k),
       fill: "none",
       stroke: COLORS[k],
-      strokeWidth: k === "fcd" ? 2.5 : 1.5,
+      strokeWidth: k === "fc" ? 2.5 : 1.5,
       strokeDasharray: "none",
       opacity: k === "ln" ? 0.7 : 1
     }
   )), holdYears <= 10 && KEYS.map((k) => {
     const d = data.find((x) => x.yr === holdYears);
-    return d ? /* @__PURE__ */ React.createElement("circle", { key: k, cx: xS(holdYears), cy: yS(d[k]), r: k === "fcd" ? 4 : 2.5, fill: COLORS[k], opacity: 0.9 }) : null;
+    return d ? /* @__PURE__ */ React.createElement("circle", { key: k, cx: xS(holdYears), cy: yS(d[k]), r: k === "fc" ? 4 : 2.5, fill: COLORS[k], opacity: 0.9 }) : null;
   })));
 }
 function App() {
@@ -737,17 +716,18 @@ function App() {
   const [downPct, setDownPct] = useState(10);
   const [leaseTerm, setLeaseTerm] = useState(36);
   const [maintPkgYears, setMaintPkgYears] = useState(0);
+  const [annualMiles, setAnnualMiles] = useState(12000);
   const { scenarios, meta } = useMemo(
-    () => calcAll(carPrice, holdYears, loanRate, investRate, diyLevel, downPct, leaseTerm, maintPkgYears),
-    [carPrice, holdYears, loanRate, investRate, diyLevel, downPct, leaseTerm, maintPkgYears]
+    () => calcAll(carPrice, holdYears, loanRate, investRate, diyLevel, downPct, leaseTerm, maintPkgYears, annualMiles),
+    [carPrice, holdYears, loanRate, investRate, diyLevel, downPct, leaseTerm, maintPkgYears, annualMiles]
   );
   const chartData = useMemo(
-    () => buildChartData(carPrice, loanRate, investRate, diyLevel, downPct, leaseTerm, maintPkgYears),
-    [carPrice, loanRate, investRate, diyLevel, downPct, leaseTerm, maintPkgYears]
+    () => buildChartData(carPrice, loanRate, investRate, diyLevel, downPct, leaseTerm, maintPkgYears, annualMiles),
+    [carPrice, loanRate, investRate, diyLevel, downPct, leaseTerm, maintPkgYears, annualMiles]
   );
   const ranked = [...scenarios].sort((a, b) => b.nw - a.nw);
   const bestKey = ranked[0].key;
-  const fcdBeatLc = chartData.find((d) => d.fcd > d.lc)?.yr ?? ">10";
+  const fcBeatLc = chartData.find((d) => d.fc > d.lc)?.yr ?? ">10";
   const nwColor = (n) => n > 0 ? "pos" : n > -25e3 ? "mid" : "neg";
   const leaseScenarios = scenarios.filter((s) => s.isLease).sort((a, b) => b.nw - a.nw);
   const buyScenarios = scenarios.filter((s) => !s.isLease).sort((a, b) => b.nw - a.nw);
@@ -771,12 +751,12 @@ function App() {
     { key: "moderate", label: "Moderate" },
     { key: "full", label: "Full" }
   ];
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("style", null, css), /* @__PURE__ */ React.createElement("div", { className: "app" }, /* @__PURE__ */ React.createElement("div", { className: "header" }, /* @__PURE__ */ React.createElement("h1", null, "Lease vs Finance", /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("span", null, "Full Stack Analysis")), /* @__PURE__ */ React.createElement("p", null, "NEW & CPO \xB7 DIY MAINTENANCE \xB7 INVEST SURPLUS \xB7 SELL AT HOLD END \xB7 2026 RATES")), /* @__PURE__ */ React.createElement("div", { className: "controls" }, /* @__PURE__ */ React.createElement("div", { className: "controls-title" }, "// configure your scenario"), /* @__PURE__ */ React.createElement("div", { className: "controls-grid" }, /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "New Car Price"), /* @__PURE__ */ React.createElement("div", { className: "val" }, fmtAbs(carPrice)), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, "CPO: ", fmtAbs(Math.round(meta.cpoPrice))), /* @__PURE__ */ React.createElement("input", { type: "range", min: 2e4, max: 85e3, step: 1e3, value: carPrice, onChange: (e) => setCarPrice(+e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "Hold Years"), /* @__PURE__ */ React.createElement("div", { className: "val" }, holdYears, " yrs"), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, "\xA0"), /* @__PURE__ */ React.createElement("input", { type: "range", min: 1, max: 10, step: 1, value: holdYears, onChange: (e) => setHoldYears(+e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "Loan Rate (APR)"), /* @__PURE__ */ React.createElement("div", { className: "val" }, loanRate.toFixed(2), "%"), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, "new pmt: ", fmtAbs(Math.round(meta.pmtNew)), "/mo"), /* @__PURE__ */ React.createElement("input", { type: "range", min: 3, max: 14, step: 0.25, value: loanRate, onChange: (e) => setLoanRate(+e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "Invest Return"), /* @__PURE__ */ React.createElement("div", { className: "val" }, investRate.toFixed(0), "%"), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, "annual, e.g. S&P index"), /* @__PURE__ */ React.createElement("input", { type: "range", min: 2, max: 13, step: 0.5, value: investRate, onChange: (e) => setInvestRate(+e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "Down Payment"), /* @__PURE__ */ React.createElement("div", { className: "val" }, downPct, "%"), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, "new: ", fmtAbs(Math.round(meta.downNew)), " \xB7 cpo: ", fmtAbs(Math.round(meta.downCPO))), /* @__PURE__ */ React.createElement("input", { type: "range", min: 0, max: 30, step: 1, value: downPct, onChange: (e) => setDownPct(+e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "Lease Term"), /* @__PURE__ */ React.createElement("div", { className: "val" }, leaseTerm / 12, " yr"), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, "new: ", fmtAbs(Math.round(meta.leaseNewMo)), "/mo \xB7 cpo: ", fmtAbs(Math.round(meta.leaseCPOMo)), "/mo"), /* @__PURE__ */ React.createElement("input", { type: "range", min: 24, max: 48, step: 12, value: leaseTerm, onChange: (e) => setLeaseTerm(+e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "New Car Maint. Pkg"), /* @__PURE__ */ React.createElement("div", { className: "val" }, maintPkgYears === 0 ? "None" : `${maintPkgYears} yr`), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, maintPkgYears > 0 ? `$0 maint for first ${maintPkgYears} yr` : "no package included"), /* @__PURE__ */ React.createElement("input", { type: "range", min: 0, max: 3, step: 1, value: maintPkgYears, onChange: (e) => setMaintPkgYears(+e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "DIY Maint. Level"), /* @__PURE__ */ React.createElement("div", { className: "val", style: { fontSize: 14 } }, meta.maintSaveMo > 0 ? `${fmtAbs(Math.round(meta.maintSaveMo))}/yr saved` : "Dealer only"), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, "\xA0"), /* @__PURE__ */ React.createElement("div", { className: "diy-toggle" }, diyLabels.map((l) => /* @__PURE__ */ React.createElement("button", { key: l.key, className: `diy-btn${diyLevel === l.key ? " active" : ""}`, onClick: () => setDiyLevel(l.key) }, l.label)))))), /* @__PURE__ */ React.createElement("div", { className: "section-max" }, /* @__PURE__ */ React.createElement("div", { style: { overflowX: "auto", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("div", { className: "scenario-grid", style: { gridTemplateColumns: "repeat(6,1fr)", minWidth: "780px" } }, ranked.map((sc, rank) => /* @__PURE__ */ React.createElement(ScenarioCard, { key: sc.key, sc, rank })))), /* @__PURE__ */ React.createElement("div", { className: "chart-section" }, /* @__PURE__ */ React.createElement("div", { className: "section-label" }, "// net worth impact over time \u2014 vertical line = hold period"), /* @__PURE__ */ React.createElement("div", { className: "chart-legend" }, scenarios.map((s) => /* @__PURE__ */ React.createElement("div", { key: s.key, className: "legend-item" }, /* @__PURE__ */ React.createElement("div", { className: "legend-dot", style: { background: COLORS[s.key] } }), s.label))), /* @__PURE__ */ React.createElement("div", { className: "chart-wrap" }, /* @__PURE__ */ React.createElement(LineChart, { data: chartData, holdYears }))), /* @__PURE__ */ React.createElement("div", { className: "crossover-section" }, /* @__PURE__ */ React.createElement("div", { className: "section-label" }, "// key crossover points"), /* @__PURE__ */ React.createElement("div", { className: "crossover-grid" }, /* @__PURE__ */ React.createElement("div", { className: "cx-item" }, /* @__PURE__ */ React.createElement("div", { className: "cx-big" }, fcdBeatLc, /* @__PURE__ */ React.createElement("small", null, typeof fcdBeatLc === "number" ? " yr" : "")), /* @__PURE__ */ React.createElement("div", { className: "cx-desc" }, "Finance CPO+DIY pulls ahead of", /* @__PURE__ */ React.createElement("br", null), "best lease strategy (Lease CPO)")), /* @__PURE__ */ React.createElement("div", { className: "cx-item" }, /* @__PURE__ */ React.createElement("div", { className: "cx-big" }, fmtAbs(Math.round(meta.pmtNew - meta.pmtCPO)), /* @__PURE__ */ React.createElement("small", null, "/mo")), /* @__PURE__ */ React.createElement("div", { className: "cx-desc" }, "Monthly payment gap:", /* @__PURE__ */ React.createElement("br", null), "New vs CPO financing")), /* @__PURE__ */ React.createElement("div", { className: "cx-item" }, /* @__PURE__ */ React.createElement("div", { className: "cx-big" }, fmtAbs(Math.round(carPrice * 0.25))), /* @__PURE__ */ React.createElement("div", { className: "cx-desc" }, "Depreciation dodged on CPO", /* @__PURE__ */ React.createElement("br", null), "(25% cliff, yrs 1\u20132)")), /* @__PURE__ */ React.createElement("div", { className: "cx-item" }, /* @__PURE__ */ React.createElement("div", { className: "cx-big" }, meta.maintSaveMo > 0 ? fmtAbs(Math.round(meta.maintSaveMo)) : "$0", /* @__PURE__ */ React.createElement("small", null, "/yr")), /* @__PURE__ */ React.createElement("div", { className: "cx-desc" }, "DIY maintenance savings", /* @__PURE__ */ React.createElement("br", null), "at ", diyLevel, " level vs dealer")))), /* @__PURE__ */ React.createElement("div", { className: "rule-box" }, /* @__PURE__ */ React.createElement("div", { className: "section-label", style: { marginBottom: 16 } }, "// hold period rules of thumb"), /* @__PURE__ */ React.createElement("div", { className: "rule-grid" }, [
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("style", null, css), /* @__PURE__ */ React.createElement("div", { className: "app" }, /* @__PURE__ */ React.createElement("div", { className: "header" }, /* @__PURE__ */ React.createElement("h1", null, "Lease vs Finance", /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("span", null, "Full Stack Analysis")), /* @__PURE__ */ React.createElement("p", null, "NEW & CPO \xB7 DIY MAINTENANCE \xB7 MILEAGE IMPACT \xB7 INVEST SURPLUS \xB7 2026 RATES")), /* @__PURE__ */ React.createElement("div", { className: "controls" }, /* @__PURE__ */ React.createElement("div", { className: "controls-title" }, "// configure your scenario"), /* @__PURE__ */ React.createElement("div", { className: "controls-grid" }, /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "New Car Price"), /* @__PURE__ */ React.createElement("div", { className: "val" }, fmtAbs(carPrice)), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, "CPO: ", fmtAbs(Math.round(meta.cpoPrice))), /* @__PURE__ */ React.createElement("input", { type: "range", min: 2e4, max: 85e3, step: 1e3, value: carPrice, onChange: (e) => setCarPrice(+e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "Hold Years"), /* @__PURE__ */ React.createElement("div", { className: "val" }, holdYears, " yrs"), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, "\xA0"), /* @__PURE__ */ React.createElement("input", { type: "range", min: 1, max: 10, step: 1, value: holdYears, onChange: (e) => setHoldYears(+e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "Loan Rate (APR)"), /* @__PURE__ */ React.createElement("div", { className: "val" }, loanRate.toFixed(2), "%"), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, "new pmt: ", fmtAbs(Math.round(meta.pmtNew)), "/mo"), /* @__PURE__ */ React.createElement("input", { type: "range", min: 3, max: 14, step: 0.25, value: loanRate, onChange: (e) => setLoanRate(+e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "Invest Return"), /* @__PURE__ */ React.createElement("div", { className: "val" }, investRate.toFixed(0), "%"), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, "annual, e.g. S&P index"), /* @__PURE__ */ React.createElement("input", { type: "range", min: 2, max: 13, step: 0.5, value: investRate, onChange: (e) => setInvestRate(+e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "Down Payment"), /* @__PURE__ */ React.createElement("div", { className: "val" }, downPct, "%"), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, "new: ", fmtAbs(Math.round(meta.downNew)), " \xB7 cpo: ", fmtAbs(Math.round(meta.downCPO))), /* @__PURE__ */ React.createElement("input", { type: "range", min: 0, max: 30, step: 1, value: downPct, onChange: (e) => setDownPct(+e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "Lease Term"), /* @__PURE__ */ React.createElement("div", { className: "val" }, leaseTerm / 12, " yr"), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, "new: ", fmtAbs(Math.round(meta.leaseNewMo)), "/mo \xB7 cpo: ", fmtAbs(Math.round(meta.leaseCPOMo)), "/mo"), /* @__PURE__ */ React.createElement("input", { type: "range", min: 24, max: 48, step: 12, value: leaseTerm, onChange: (e) => setLeaseTerm(+e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "New Car Maint. Pkg"), /* @__PURE__ */ React.createElement("div", { className: "val" }, maintPkgYears === 0 ? "None" : `${maintPkgYears} yr`), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, maintPkgYears > 0 ? `$0 maint for first ${maintPkgYears} yr` : "no package included"), /* @__PURE__ */ React.createElement("input", { type: "range", min: 0, max: 3, step: 1, value: maintPkgYears, onChange: (e) => setMaintPkgYears(+e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "Annual Mileage"), /* @__PURE__ */ React.createElement("div", { className: "val" }, (annualMiles / 1e3).toFixed(0), "k mi/yr"), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, annualMiles > 12e3 ? "+" + fmtAbs(Math.round(meta.leaseOverageMo)) + "/mo lease overage" : annualMiles < 12e3 ? "under standard 12k" : "standard coverage"), /* @__PURE__ */ React.createElement("input", { type: "range", min: 8e3, max: 2e4, step: 1e3, value: annualMiles, onChange: (e) => setAnnualMiles(+e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "control-item" }, /* @__PURE__ */ React.createElement("label", null, "DIY Maint. Level"), /* @__PURE__ */ React.createElement("div", { className: "val", style: { fontSize: 14 } }, meta.maintSaveMo > 0 ? `${fmtAbs(Math.round(meta.maintSaveMo))}/yr saved` : "Dealer only"), /* @__PURE__ */ React.createElement("div", { className: "val-sub" }, "\xA0"), /* @__PURE__ */ React.createElement("div", { className: "diy-toggle" }, diyLabels.map((l) => /* @__PURE__ */ React.createElement("button", { key: l.key, className: `diy-btn${diyLevel === l.key ? " active" : ""}`, onClick: () => setDiyLevel(l.key) }, l.label)))))), /* @__PURE__ */ React.createElement("div", { className: "section-max" }, /* @__PURE__ */ React.createElement("div", { style: { overflowX: "auto", marginBottom: "12px" } }, /* @__PURE__ */ React.createElement("div", { className: "scenario-grid", style: { gridTemplateColumns: "repeat(4,1fr)", minWidth: "640px" } }, ranked.map((sc, rank) => /* @__PURE__ */ React.createElement(ScenarioCard, { key: sc.key, sc, rank })))), /* @__PURE__ */ React.createElement("div", { className: "chart-section" }, /* @__PURE__ */ React.createElement("div", { className: "section-label" }, "// net worth impact over time \u2014 vertical line = hold period"), /* @__PURE__ */ React.createElement("div", { className: "chart-legend" }, scenarios.map((s) => /* @__PURE__ */ React.createElement("div", { key: s.key, className: "legend-item" }, /* @__PURE__ */ React.createElement("div", { className: "legend-dot", style: { background: COLORS[s.key] } }), s.label))), /* @__PURE__ */ React.createElement("div", { className: "chart-wrap" }, /* @__PURE__ */ React.createElement(LineChart, { data: chartData, holdYears }))), /* @__PURE__ */ React.createElement("div", { className: "crossover-section" }, /* @__PURE__ */ React.createElement("div", { className: "section-label" }, "// key crossover points"), /* @__PURE__ */ React.createElement("div", { className: "crossover-grid" }, /* @__PURE__ */ React.createElement("div", { className: "cx-item" }, /* @__PURE__ */ React.createElement("div", { className: "cx-big" }, fcBeatLc, /* @__PURE__ */ React.createElement("small", null, typeof fcBeatLc === "number" ? " yr" : "")), /* @__PURE__ */ React.createElement("div", { className: "cx-desc" }, "Finance CPO pulls ahead of", /* @__PURE__ */ React.createElement("br", null), "best lease strategy (Lease CPO)")), /* @__PURE__ */ React.createElement("div", { className: "cx-item" }, /* @__PURE__ */ React.createElement("div", { className: "cx-big" }, fmtAbs(Math.round(meta.pmtNew - meta.pmtCPO)), /* @__PURE__ */ React.createElement("small", null, "/mo")), /* @__PURE__ */ React.createElement("div", { className: "cx-desc" }, "Monthly payment gap:", /* @__PURE__ */ React.createElement("br", null), "New vs CPO financing")), /* @__PURE__ */ React.createElement("div", { className: "cx-item" }, /* @__PURE__ */ React.createElement("div", { className: "cx-big" }, fmtAbs(Math.round(carPrice * 0.25))), /* @__PURE__ */ React.createElement("div", { className: "cx-desc" }, "Depreciation dodged (CPO)", /* @__PURE__ */ React.createElement("br", null), "~25% cliff avoided, yrs 1\u20132")), /* @__PURE__ */ React.createElement("div", { className: "cx-item" }, /* @__PURE__ */ React.createElement("div", { className: "cx-big" }, meta.maintSaveMo > 0 ? fmtAbs(Math.round(meta.maintSaveMo)) : "$0", /* @__PURE__ */ React.createElement("small", null, "/yr")), /* @__PURE__ */ React.createElement("div", { className: "cx-desc" }, "DIY maintenance savings", /* @__PURE__ */ React.createElement("br", null), "at ", diyLevel, " level vs dealer")))), /* @__PURE__ */ React.createElement("div", { className: "rule-box" }, /* @__PURE__ */ React.createElement("div", { className: "section-label", style: { marginBottom: 16 } }, "// hold period rules of thumb"), /* @__PURE__ */ React.createElement("div", { className: "rule-grid" }, [
     { yr: "< 3 years", vc: "LEASE NEW", cls: "vc-lease", note: "Avoid depreciation entirely. Down payment stays invested. Monthly gap compounds aggressively." },
     { yr: "3\u20135 years", vc: "LEASE CPO", cls: "vc-toss", note: "Lower payment, skip used-car risks, invest a larger gap each month." },
     { yr: "5\u20137 years", vc: "FINANCE CPO", cls: "vc-buy", note: "Post-loan years compound hard. Car sale proceeds partially offset costs." },
-    { yr: "7\u201310 years", vc: "CPO + DIY", cls: "vc-cpo", note: "Maximum stack: no depreciation cliff, no loan drag, no dealer labor \u2014 all three advantages compounding." }
-  ].map((r, i) => /* @__PURE__ */ React.createElement("div", { key: i, className: "rule-item" }, /* @__PURE__ */ React.createElement("div", { className: "rule-years" }, r.yr), /* @__PURE__ */ React.createElement("div", { className: `rule-verdict ${r.cls}` }, r.vc), /* @__PURE__ */ React.createElement("div", { className: "rule-note" }, r.note))))), /* @__PURE__ */ React.createElement("div", { className: "assumptions-box" }, /* @__PURE__ */ React.createElement("strong", null, "Model assumptions \u2014"), " All scenarios share a monthly budget ceiling of ", fmtAbs(Math.round(meta.refMo)), "/mo (Finance New + dealer maint). Whatever a scenario spends less than the ceiling is invested at ", investRate, "%/yr. Lease scenarios invest the ", fmtAbs(Math.round(meta.downNew)), " down payment equivalent as a lump sum at t=0. Finance CPO invests the ", fmtAbs(Math.round(meta.downNew - meta.downCPO)), " down payment difference as a lump. Finance scenarios sell the car at year ", holdYears, ". Lease terms re-sign every ", leaseTerm / 12, " yr with a $1,200 signing fee each time. More down always hurts net worth when invest rate (", investRate, "%) > loan rate (", loanRate, "%) due to opportunity cost on a depreciating asset. ", /* @__PURE__ */ React.createElement("strong", null, "CPO pricing \u2014"), " modeled as a 2-year-old car at ", fmtAbs(Math.round(meta.cpoPrice)), " (", (meta.cpoPrice / meta.newPrice * 100).toFixed(0), "% of new price, ~", (100 - meta.cpoPrice / meta.newPrice * 100).toFixed(0), "% depreciation). Real-world 2yr depreciation is typically 20\u201330% \u2014 this model's ~16% is conservative, meaning the CPO price advantage may be understated."))));
+    { yr: "7\u201310 years", vc: "Finance CPO", cls: "vc-cpo", note: "Max stack: no depreciation cliff, no loan drag, DIY savings \u2014 all advantages compounding long-term." }
+  ].map((r, i) => /* @__PURE__ */ React.createElement("div", { key: i, className: "rule-item" }, /* @__PURE__ */ React.createElement("div", { className: "rule-years" }, r.yr), /* @__PURE__ */ React.createElement("div", { className: `rule-verdict ${r.cls}` }, r.vc), /* @__PURE__ */ React.createElement("div", { className: "rule-note" }, r.note))))), /* @__PURE__ */ React.createElement("div", { className: "assumptions-box" }, /* @__PURE__ */ React.createElement("strong", null, "Model assumptions \u2014"), " All scenarios share a monthly budget ceiling of ", fmtAbs(Math.round(meta.refMo)), "/mo (Finance New + dealer maint). Whatever a scenario spends less than the ceiling is invested at ", investRate, "%/yr. Lease scenarios invest the ", fmtAbs(Math.round(meta.downNew)), " down payment equivalent as a lump sum at t=0. Finance CPO invests the ", fmtAbs(Math.round(meta.downNew - meta.downCPO)), " down payment difference as a lump. Finance scenarios sell the car at year ", holdYears, ". Lease terms re-sign every ", leaseTerm / 12, " yr with a $1,200 signing fee each time. Finance New and Finance CPO both reflect the selected DIY maintenance level. More down always hurts net worth when invest rate (", investRate, "%) > loan rate (", loanRate, "%) due to opportunity cost. ", /* @__PURE__ */ React.createElement("strong", null, "Mileage \u2014"), " maintenance scales linearly with annual miles vs 12k baseline; lease payments add $0.20/mi/yr overage above 12k. ", /* @__PURE__ */ React.createElement("strong", null, "CPO pricing \u2014"), " modeled as a 2-year-old car at ", fmtAbs(Math.round(meta.cpoPrice)), " (", (meta.cpoPrice / meta.newPrice * 100).toFixed(0), "% of new price, ~", (100 - meta.cpoPrice / meta.newPrice * 100).toFixed(0), "% depreciation). Real-world 2yr depreciation is typically 20\u201330% \u2014 this model's ~16% is conservative, meaning the CPO advantage may be understated."))));
 }
 ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(App, null));
 </script>
