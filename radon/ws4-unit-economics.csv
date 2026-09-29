@@ -1,0 +1,17 @@
+system_type,price,materials,other_variable,contribution_margin,total_hours,cm_per_hour,meets_700_gate
+SSD (basement/slab),1200,430,465,305,7.5,41,False
+SSD (basement/slab),1800,430,482,887,7.5,118,True
+SSD (basement/slab),2500,430,502,1567,7.5,209,True
+SSD (basement/slab),1607,430,477,700,7.5,93,True
+"Crawlspace sub-membrane (~1,500 sf liner)",1200,969,465,-234,10.5,-22,False
+"Crawlspace sub-membrane (~1,500 sf liner)",1800,969,482,349,10.5,33,False
+"Crawlspace sub-membrane (~1,500 sf liner)",2500,969,502,1028,10.5,98,True
+"Crawlspace sub-membrane (~1,500 sf liner)",2162,969,493,700,10.5,67,True
+Combination (slab + ~600 sf crawl),1200,875,465,-140,13.5,-10,False
+Combination (slab + ~600 sf crawl),1800,875,482,443,13.5,33,False
+Combination (slab + ~600 sf crawl),2500,875,502,1123,13.5,83,True
+Combination (slab + ~600 sf crawl),2065,875,490,700,13.5,52,True
+Passive-stack activation (fan only),1200,292,465,443,4.0,111,False
+Passive-stack activation (fan only),1800,292,482,1026,4.0,256,True
+Passive-stack activation (fan only),2500,292,502,1705,4.0,426,True
+Passive-stack activation (fan only),1465,292,472,700,4.0,175,True
