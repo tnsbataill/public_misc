@@ -1,0 +1,209 @@
+<title>ORBIS NXO1215 Totes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: spec-sheet header, full-width model stage with toolbar, then a published-vs-modeled table. */
+:root {
+  --bg: #eef1f4; --panel: #ffffff; --fg: #1b2430; --muted: #5d6b7c; --line: #d3dae2;
+  --accent: #c2410c; --stage: #dfe5eb;
+  --display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11161c; --panel: #18202a; --fg: #e4e9ef; --muted: #93a1b2; --line: #2a3542;
+  --accent: #fb923c; --stage: #0c1015; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11161c; --panel: #18202a; --fg: #e4e9ef; --muted: #93a1b2; --line: #2a3542;
+  --accent: #fb923c; --stage: #0c1015; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font-family: var(--display); font-size: 15px; }
+.wrap { max-width: 1100px; margin: 0 auto; padding-inline: 16px; padding-block: 24px 40px; display: grid; gap: 20px; }
+header { display: grid; gap: 4px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font-size: clamp(26px, 4vw, 36px); margin: 0; font-weight: 600; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); max-width: 65ch; line-height: 1.5; }
+.bar { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; }
+.group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.group > span { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-right: 4px; }
+button { font: 500 13px var(--mono); color: var(--fg); background: var(--panel); border: 1px solid var(--line);
+  border-radius: 4px; padding: 7px 11px; cursor: pointer; }
+button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.swatch { width: 28px; height: 28px; padding: 0; }
+.swatch[aria-pressed="true"] { outline: 2px solid var(--accent); outline-offset: 2px; }
+.stage { position: relative; background: var(--stage); border: 1px solid var(--line); border-radius: 6px;
+  height: min(62vh, 560px); min-height: 320px; overflow: hidden; }
+.stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.readout { position: absolute; left: 12px; bottom: 10px; font: 12px var(--mono); color: var(--muted); pointer-events: none; }
+.hint { position: absolute; right: 12px; bottom: 10px; font: 12px var(--mono); color: var(--muted); pointer-events: none; }
+.status[hidden] { display: none; }
+.status { position: absolute; inset: 0; display: grid; place-items: center; font: 13px var(--mono); color: var(--muted); }
+.tablewrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; min-width: 560px; }
+th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--line); }
+th { font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+td.num { font-family: var(--mono); font-size: 13px; }
+tr:last-child td { border-bottom: 0; }
+.src { font-size: 11px; font-family: var(--mono); color: var(--muted); }
+.note { color: var(--muted); font-size: 14px; line-height: 1.55; max-width: 75ch; margin: 0; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ORBIS Stakpak · straight-wall container</div>
+    <h1>NXO1215-5 and NXO1215-7</h1>
+    <p>Parametric 3D models of the 12 × 15 in footprint totes at 5 in and 7½ in height. Drag to orbit, scroll or pinch to zoom.</p>
+  </header>
+
+  <div class="bar" role="toolbar" aria-label="Viewer controls">
+    <div class="group"><span>Model</span>
+      <button id="m5" data-model="5" aria-pressed="false">-5 · 5″</button>
+      <button id="m7" data-model="7" aria-pressed="false">-7 · 7½″</button>
+      <button id="mboth" data-model="both" aria-pressed="true">Side by side</button>
+      <button id="mstack" data-model="stack" aria-pressed="false">Stacked</button>
+    </div>
+    <div class="group"><span>Color</span>
+      <button class="swatch" id="cgy" data-color="#7d858c" aria-label="Gray" aria-pressed="true" style="background:#7d858c"></button>
+      <button class="swatch" id="cbl" data-color="#2457a6" aria-label="Blue" aria-pressed="false" style="background:#2457a6"></button>
+      <button class="swatch" id="cgn" data-color="#2f7d3b" aria-label="Green" aria-pressed="false" style="background:#2f7d3b"></button>
+      <button class="swatch" id="cbk" data-color="#2a2d31" aria-label="Black" aria-pressed="false" style="background:#2a2d31"></button>
+    </div>
+    <div class="group"><span>View</span>
+      <button id="wire" aria-pressed="false">Wireframe</button>
+      <button id="viso" data-view="iso" aria-pressed="true">Iso</button>
+      <button id="vend" data-view="end" aria-pressed="false">End</button>
+      <button id="vside" data-view="side" aria-pressed="false">Side</button>
+      <button id="vunder" data-view="under" aria-pressed="false">Underside</button>
+    </div>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="status" id="status">Loading models…</div>
+    <div class="readout" id="readout"></div>
+    <div class="hint">units: inches</div>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Dimension</th><th>NXO1215-5</th><th>NXO1215-7</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Outside L × W</td><td class="num">12.0 × 15.0 in</td><td class="num">12.0 × 15.0 in</td><td class="src">ORBIS spec</td></tr>
+        <tr><td>Outside height</td><td class="num">5.0 in</td><td class="num">7.5 in</td><td class="src">ORBIS spec</td></tr>
+        <tr><td>Inside floor L × W</td><td class="num">9.4 × 13.0 in</td><td class="num">9.4 × 13.0 in</td><td class="src">ORBIS spec</td></tr>
+        <tr><td>Product clearance</td><td class="num">4.4 in</td><td class="num">6.8 in</td><td class="src">ORBIS spec</td></tr>
+        <tr><td>Part weight</td><td class="num">1.8 lb</td><td class="num">2.3 lb</td><td class="src">ORBIS spec</td></tr>
+        <tr><td>Load capacity</td><td class="num">40 lb</td><td class="num">40 lb</td><td class="src">distributor listing</td></tr>
+        <tr><td>Inside opening at rim</td><td class="num">11.4 × 14.4 in</td><td class="num">11.4 × 14.4 in</td><td class="src">estimated</td></tr>
+        <tr><td>Wall / floor thickness</td><td class="num">0.10 / 0.12 in</td><td class="num">0.10 / 0.12 in</td><td class="src">estimated</td></tr>
+        <tr><td>Top bumper (deck + skirt)</td><td class="num">0.55 in deep</td><td class="num">0.55 in deep</td><td class="src">estimated</td></tr>
+        <tr><td>Side walls</td><td class="num">vertical, 11.6 × 14.6 in</td><td class="num">vertical, 11.6 × 14.6 in</td><td class="src">estimated</td></tr>
+        <tr><td>Beveled base (stacking)</td><td class="num">0.48 in tall</td><td class="num">0.58 in tall</td><td class="src">estimated</td></tr>
+        <tr><td>External ribs</td><td class="num">22 vertical + belt rib</td><td class="num">22 vertical + belt rib</td><td class="src">estimated</td></tr>
+        <tr><td>Fingertip handles</td><td class="num">4 · 5.5 / 5.0 in wide</td><td class="num">4 · 5.5 / 5.0 in wide</td><td class="src">estimated</td></tr>
+        <tr><td>Drain slots</td><td class="num">3 per handle, 8 in bumper</td><td class="num">3 per handle, 8 in bumper</td><td class="src">estimated</td></tr>
+        <tr><td>Modeled weight (HDPE)</td><td class="num">1.84 lb</td><td class="num">2.34 lb</td><td class="src">computed</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="note">Outside size, floor size and clearance follow the published ORBIS figures. The rest is modeled as a thin-wall molding with vertical sides from the features ORBIS lists: reinforced external ribbing, fingertip handles, a continuous top bumper, textured label areas, and drain holes in the handles and bumper. Those feature sizes are estimates, so use these models for fit checks, layouts and renders, not as ORBIS tooling data. STEP and STL files (in millimetres) and the CadQuery source are in the <code>orbis-totes</code> folder of the repository.</p>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { STLLoader } from "three/addons/loaders/STLLoader.js";
+
+const IN = 25.4, FOOT_H = 0.25;
+const stage = document.getElementById("stage");
+const status = document.getElementById("status");
+const readout = document.getElementById("readout");
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+stage.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 500);
+camera.up.set(0, 0, 1);  // Z-up; must be set before OrbitControls reads it
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, 1.6));
+const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(20, -30, 40); scene.add(key);
+const fill = new THREE.DirectionalLight(0xffffff, 0.8); fill.position.set(-30, 20, 15); scene.add(fill);
+const grid = new THREE.GridHelper(48, 48, 0x8896a5, 0x8896a5);
+grid.rotation.x = Math.PI / 2; grid.material.transparent = true; grid.material.opacity = 0.25;
+scene.add(grid);
+
+const material = new THREE.MeshStandardMaterial({ color: 0x7d858c, roughness: 0.62, metalness: 0.02 });
+const meshes = {};
+const loader = new STLLoader();
+const load = (name) => new Promise((res, rej) => loader.load(name, (g) => {
+  g.scale(1 / IN, 1 / IN, 1 / IN); g.computeVertexNormals(); res(new THREE.Mesh(g, material));
+}, undefined, rej));
+
+let mode = "both", view = "iso";
+const VIEWS = {
+  iso: new THREE.Vector3(0.55, -0.75, 0.48),
+  end: new THREE.Vector3(1, -0.02, 0.12),
+  side: new THREE.Vector3(0.02, -1, 0.12),
+  under: new THREE.Vector3(0.35, -0.45, -0.85),
+};
+function layout() {
+  const m5 = meshes[5], m7 = meshes[7];
+  if (!m5) return;
+  m5.visible = mode !== "7"; m7.visible = mode !== "5";
+  m5.position.set(0, 0, 0); m7.position.set(0, 0, 0);
+  if (mode === "both") { m5.position.x = -8.5; m7.position.x = 8.5; }
+  if (mode === "stack") { m5.position.z = 7.5 - FOOT_H; }
+  const text = {
+    "5": "NXO1215-5 · 12 × 15 × 5 in",
+    "7": "NXO1215-7 · 12 × 15 × 7.5 in",
+    both: "-5 (left) and -7 (right)",
+    stack: "-5 stacked on -7 · foot nests 0.25 in · 12.25 in overall",
+  }[mode];
+  readout.textContent = text;
+  frame();
+}
+function frame() {
+  const box = new THREE.Box3();
+  Object.values(meshes).forEach((m) => m.visible && box.expandByObject(m));
+  const c = box.getCenter(new THREE.Vector3()), r = box.getSize(new THREE.Vector3()).length() / 2;
+  controls.target.copy(c);
+  const dist = r / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.05;
+  grid.visible = view !== "under";
+  camera.position.copy(c).add(VIEWS[view].clone().normalize().multiplyScalar(dist));
+  controls.update();
+}
+function resize() {
+  const { clientWidth: w, clientHeight: h } = stage;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage); resize();
+
+function press(sel, el) { document.querySelectorAll(sel).forEach((b) => b.setAttribute("aria-pressed", String(b === el))); }
+document.querySelectorAll("[data-model]").forEach((b) => b.addEventListener("click", () => {
+  mode = b.dataset.model; press("[data-model]", b); layout();
+}));
+document.querySelectorAll("[data-color]").forEach((b) => b.addEventListener("click", () => {
+  material.color.set(b.dataset.color); press("[data-color]", b);
+}));
+document.getElementById("wire").addEventListener("click", (e) => {
+  material.wireframe = !material.wireframe; e.currentTarget.setAttribute("aria-pressed", String(material.wireframe));
+});
+document.querySelectorAll("[data-view]").forEach((b) => b.addEventListener("click", () => {
+  view = b.dataset.view; press("[data-view]", b); frame();
+}));
+
+(function tick() { controls.update(); renderer.render(scene, camera); requestAnimationFrame(tick); })();
+
+Promise.all([load("NXO1215-5.stl.txt"), load("NXO1215-7.stl.txt")]).then(([a, b]) => {
+  meshes[5] = a; meshes[7] = b; scene.add(a, b); status.hidden = true; layout();
+}).catch(() => { status.textContent = "The model files did not load. Reload the page to try again."; });
+</script>
