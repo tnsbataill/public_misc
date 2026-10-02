@@ -10,7 +10,8 @@ The part is modeled as a thin-wall HDPE molding: vertical side walls just inside
 channel (open underneath), vertical external ribs, a belt rib at the stacking line, and a
 beveled base that drops inside the rim of the tote below. The bevel is what makes the inside
 floor (9.4" x 13") smaller than the opening. Fingertip handle pockets sit on all four sides
-and textured label pads on the 15" sides. Feature sizes not in the spec sheet are estimates,
+and flat label pads on the 15" sides. All faces are planar (chamfered corners, no fillets) so the STL stays light and imports into
+SolidWorks as a solid body. Feature sizes not in the spec sheet are estimates,
 not ORBIS CAD data. Output is in millimetres.
 
 Usage: python build_totes.py   -> writes STEP + STL for each model into ./models
@@ -27,17 +28,17 @@ HDPE = 0.0347         # lb per cubic inch, for the weight check
 L, W = 12.0, 15.0
 T = 0.10              # nominal wall thickness
 FLOOR_T = 0.12
-CORNER_R = 0.6        # bumper outside corner radius
+C = 0.5               # 45-degree corner chamfer, shared by bumper, wall and belt so the corners line up
 
-WALL = (11.6, 14.6, 0.5)       # vertical wall, outside L, W, corner radius
-BOTTOM_IN = (9.4, 13.0, 0.4)   # inside floor (published size)
+WALL = (11.6, 14.6, C)         # vertical wall, outside L, W, corner chamfer
+BOTTOM_IN = (9.4, 13.0, 0.35)   # inside floor (published size)
 BASE_OUT = (BOTTOM_IN[0] + 2 * T, BOTTOM_IN[1] + 2 * T, BOTTOM_IN[2] + T)  # bottom of the bevel
-BEVEL_TOP = (11.3, 14.3, 0.55) # top of the base bevel; fits inside the rim opening below
+BEVEL_TOP = (11.3, 14.3, 0.45) # top of the base bevel; fits inside the rim opening below
 
 BUMPER_H = 0.55       # continuous bumper: deck plus downturned skirt
 DECK_T = 0.13
 BELT_H = 0.15         # belt rib at the stacking line
-BELT = (L - 0.1, W - 0.1, CORNER_R - 0.05)
+BELT = (L - 0.1, W - 0.1, C)
 
 RIB_T = 0.12
 X_FACE_RIBS = (-5.4, -3.6, 0.0, 3.6, 5.4)   # y positions on the 12"-wide ends (0 runs under the handle)
@@ -48,8 +49,7 @@ GRIP_H = 0.75         # finger opening height below the bumper skirt
 GRIP_BACK = 0.45      # how far the pocket reaches behind the wall line
 DRAIN = (0.5, 0.14)   # drain slot length x width
 
-PAD_W, PAD_T = 4.6, 0.035      # textured label pad on the Y faces
-GROOVE_PITCH, GROOVE_H, GROOVE_D = 0.1, 0.04, 0.02
+PAD_W, PAD_T = 4.6, 0.035      # raised label pad on the Y faces
 
 MODELS = {
     "NXO1215-5": {"height": 5.0, "clearance": 4.4, "weight": 1.8},
@@ -57,16 +57,30 @@ MODELS = {
 }
 
 
-def rr_slab(x, y, r, z0, z1):
-    return cq.Workplane("XY").workplane(offset=z0).sketch().rect(x, y).vertices().fillet(r).finalize().extrude(z1 - z0)
+def octagon(x, y, c):
+    """Rectangle x by y with 45-degree corner chamfers of leg c (all faces stay planar)."""
+    hx, hy = x / 2, y / 2
+    return [(hx, hy - c), (hx - c, hy), (-hx + c, hy), (-hx, hy - c),
+            (-hx, -hy + c), (-hx + c, -hy), (hx - c, -hy), (hx, -hy + c)]
 
 
-def rr_loft(bottom, top, z0, z1):
-    s0 = cq.Sketch().rect(bottom[0], bottom[1]).vertices().fillet(bottom[2])
-    s1 = cq.Sketch().rect(top[0], top[1]).vertices().fillet(top[2])
-    return cq.Workplane("XY").placeSketch(
-        s0.moved(cq.Location(cq.Vector(0, 0, z0))), s1.moved(cq.Location(cq.Vector(0, 0, z1)))
-    ).loft()
+def slab(x, y, c, z0, z1):
+    return cq.Workplane("XY").workplane(offset=z0).polyline(octagon(x, y, c)).close().extrude(z1 - z0)
+
+
+def ruled_loft(bottom, top, z0, z1):
+    """Frustum between two chamfered rectangles, built from planar faces (no spline surfaces)."""
+    lo = [cq.Vector(x, y, z0) for x, y in octagon(*bottom)]
+    hi = [cq.Vector(x, y, z1) for x, y in octagon(*top)]
+    faces = [cq.Face.makeFromWires(cq.Wire.makePolygon(lo[::-1], close=True)),
+             cq.Face.makeFromWires(cq.Wire.makePolygon(hi, close=True))]
+    for i in range(8):
+        j = (i + 1) % 8
+        faces.append(cq.Face.makeFromWires(cq.Wire.makePolygon([lo[i], lo[j], hi[j], hi[i]], close=True)))
+    solid = cq.Solid.makeSolid(cq.Shell.makeShell(faces)).fix()
+    if solid.Volume() < 0:
+        solid = cq.Solid(solid.wrapped.Reversed())
+    return cq.Workplane("XY").add(solid)
 
 
 def box(x0, x1, y0, y1, z0, z1):
@@ -95,16 +109,16 @@ def build(height, clearance):
     grip_bottom = z_skirt - GRIP_H - T
 
     # Shell: beveled base up to the stacking line, then vertical walls to the top.
-    tote = rr_loft(BASE_OUT, BEVEL_TOP, 0, stack_z).union(rr_slab(*WALL, stack_z, H))
+    tote = ruled_loft(BASE_OUT, BEVEL_TOP, 0, stack_z).union(slab(*WALL, stack_z, H))
 
     # Continuous bumper: full-footprint deck with a skirt turned down around the outside.
-    tote = tote.union(rr_slab(L, W, CORNER_R, z_deck, H))
-    skirt = rr_slab(L, W, CORNER_R, z_skirt, H).cut(rr_slab(L - 2 * T, W - 2 * T, CORNER_R - T, z_skirt - 1, H + 1))
+    tote = tote.union(slab(L, W, C, z_deck, H))
+    skirt = slab(L, W, C, z_skirt, H).cut(slab(L - 2 * T, W - 2 * T, C - 0.06, z_skirt - 1, H + 1))
     tote = tote.union(skirt)
 
     # Belt rib at the stacking line. It also closes the step between the bevel and the wall.
-    belt = rr_slab(*BELT, stack_z - 0.1, stack_z + BELT_H).cut(
-        rr_slab(BEVEL_TOP[0] - 0.3, BEVEL_TOP[1] - 0.3, 0.4, stack_z - 1, H))
+    belt = slab(*BELT, stack_z - 0.1, stack_z + BELT_H).cut(
+        slab(BEVEL_TOP[0] - 0.3, BEVEL_TOP[1] - 0.3, 0.35, stack_z - 1, H))
     tote = tote.union(belt)
 
     # Vertical external ribs from the belt to the bumper deck.
@@ -116,30 +130,24 @@ def build(height, clearance):
             z1 = grip_bottom + 0.02 if p == 0.0 else z_deck + 0.02   # centre rib carries the handle
             tote = tote.union(rib(axis, sign, p, stack_z, z1))
 
-    # Corner ribs on the diagonals. Wall and bumper corners share a diagonal, so each rib is
-    # a plain box rotated 45 degrees.
-    k = 1 / math.sqrt(2)
-    s_in = WALL[2] - 0.05
-    s_out = WALL[2] + (half[0] - wall[0]) * math.sqrt(2) - 0.05
+    # Corner ribs on the diagonals. Wall and bumper use the same chamfer, so their chamfer
+    # faces are parallel and centred on one diagonal; each rib bridges the gap between them.
+    gap = (half[0] - wall[0]) * math.sqrt(2)
     for sx in (1, -1):
         for sy in (1, -1):
-            c = cq.Vector(sx * (wall[0] - WALL[2]), sy * (wall[1] - WALL[2]), 0)
-            r = (cq.Workplane("XY").box(s_out - s_in, RIB_T, z_deck + 0.02 - stack_z)
-                 .translate(((s_in + s_out) / 2, 0, (stack_z + z_deck + 0.02) / 2))
-                 .rotate((0, 0, 0), (0, 0, 1), math.degrees(math.atan2(sy, sx)))
-                 .translate(c))
-            tote = tote.union(r)
+            m = cq.Vector(sx * (wall[0] - C / 2), sy * (wall[1] - C / 2), 0)
+            rib_c = (cq.Workplane("XY").box(gap + 0.03, RIB_T, z_deck + 0.02 - stack_z)
+                     .translate(((gap - 0.07) / 2, 0, (stack_z + z_deck + 0.02) / 2))
+                     .rotate((0, 0, 0), (0, 0, 1), math.degrees(math.atan2(sy, sx)))
+                     .translate(m))
+            tote = tote.union(rib_c)
 
     # Inner cavity: bevel inside the base, vertical above. A small shelf is left at the
     # stacking line where the two meet.
-    inner_wall = (WALL[0] - 2 * T, WALL[1] - 2 * T, WALL[2] - T)
-    bevel_in = (BEVEL_TOP[0] - 2 * T, BEVEL_TOP[1] - 2 * T, BEVEL_TOP[2] - T)
-    cavity = rr_loft(BOTTOM_IN, bevel_in, floor_z, stack_z + 0.001)
-    try:
-        cavity = cavity.faces("<Z").edges().fillet(0.12)
-    except Exception:
-        pass
-    cavity = cavity.union(rr_slab(*inner_wall, stack_z, H + 0.01))
+    inner_wall = (WALL[0] - 2 * T, WALL[1] - 2 * T, C - 0.06)
+    bevel_in = (BEVEL_TOP[0] - 2 * T, BEVEL_TOP[1] - 2 * T, BEVEL_TOP[2] - 0.06)
+    cavity = ruled_loft(BOTTOM_IN, bevel_in, floor_z, stack_z + 0.001)
+    cavity = cavity.union(slab(*inner_wall, stack_z, H + 0.01))
     tote = tote.cut(cavity)
 
     # Fingertip handles on all four sides: a housing that bulges into the bin, a rounded
@@ -150,10 +158,6 @@ def build(height, clearance):
         housing = orient(axis, sign, n_back - T, half[axis] - 0.02, -w / 2 - T, w / 2 + T, grip_bottom, z_deck + 0.01)
         tote = tote.union(housing)
         pocket = orient(axis, sign, n_back, half[axis] + 0.5, -w / 2, w / 2, grip_bottom + T, z_deck)
-        try:
-            pocket = pocket.edges("|X" if axis == 0 else "|Y").fillet(0.3)
-        except Exception:
-            pass
         tote = tote.cut(pocket)
         n_mid = (n_back + half[axis]) / 2
         for tp in (-w / 3, 0.0, w / 3):
@@ -167,19 +171,11 @@ def build(height, clearance):
             tote = tote.cut(orient(axis, sign, half[axis] - T - 0.05, half[axis] + 0.05, tp - 0.2, tp + 0.2,
                                    z_skirt - 0.01, z_skirt + 0.12))
 
-    # Textured label pads on the 15" sides: a thin raised panel with fine horizontal grooves.
+    # Label pads on the 15" sides: a thin raised flat panel (texture left off to keep the mesh light).
     pad_z0, pad_z1 = stack_z + BELT_H + 0.3, grip_bottom - 0.25
     if pad_z1 - pad_z0 > 0.8:
         for sign in (1, -1):
-            pad = orient(1, sign, wall[1] - 0.01, wall[1] + PAD_T, -PAD_W / 2, PAD_W / 2, pad_z0, pad_z1)
-            grooves = None
-            z = pad_z0 + 0.12
-            while z < pad_z1 - 0.12:
-                g = orient(1, sign, wall[1] + PAD_T - GROOVE_D, wall[1] + 0.2,
-                           -PAD_W / 2 + 0.12, PAD_W / 2 - 0.12, z - GROOVE_H / 2, z + GROOVE_H / 2)
-                grooves = g if grooves is None else grooves.union(g)
-                z += GROOVE_PITCH
-            tote = tote.union(pad.cut(grooves))
+            tote = tote.union(orient(1, sign, wall[1] - 0.01, wall[1] + PAD_T, -PAD_W / 2, PAD_W / 2, pad_z0, pad_z1))
 
     return tote.val().scale(IN)  # inches -> mm
 
@@ -190,8 +186,8 @@ if __name__ == "__main__":
     for name, p in MODELS.items():
         solid = build(p["height"], p["clearance"])
         cq.exporters.export(solid, str(out / f"{name}.step"))
-        cq.exporters.export(solid, str(out / f"{name}.stl"), tolerance=0.05, angularTolerance=0.1)
-        verts, _ = solid.tessellate(0.05)  # OCCT bounding boxes are loose on filleted faces
+        cq.exporters.export(solid, str(out / f"{name}.stl"), tolerance=0.5, angularTolerance=0.5)
+        verts, _ = solid.tessellate(0.05)  # OCCT bounding boxes can be loose
         size = [(max(getattr(v, a) for v in verts) - min(getattr(v, a) for v in verts)) / IN for a in "xyz"]
         vol = solid.Volume() / IN**3
         print(f"{name}: {size[0]:.2f} x {size[1]:.2f} x {size[2]:.2f} in, valid={solid.isValid()}, "
