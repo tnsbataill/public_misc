@@ -69,7 +69,10 @@ tr:last-child td { border-bottom: 0; }
     </div>
     <div class="group"><span>View</span>
       <button id="wire" aria-pressed="false">Wireframe</button>
-      <button id="reset">Reset view</button>
+      <button id="viso" data-view="iso" aria-pressed="true">Iso</button>
+      <button id="vend" data-view="end" aria-pressed="false">End</button>
+      <button id="vside" data-view="side" aria-pressed="false">Side</button>
+      <button id="vunder" data-view="under" aria-pressed="false">Underside</button>
     </div>
   </div>
 
@@ -89,14 +92,19 @@ tr:last-child td { border-bottom: 0; }
         <tr><td>Product clearance</td><td class="num">4.4 in</td><td class="num">6.8 in</td><td class="src">ORBIS spec</td></tr>
         <tr><td>Part weight</td><td class="num">1.8 lb</td><td class="num">2.3 lb</td><td class="src">ORBIS spec</td></tr>
         <tr><td>Load capacity</td><td class="num">40 lb</td><td class="num">40 lb</td><td class="src">distributor listing</td></tr>
-        <tr><td>Inside opening at rim</td><td class="num">10.4 × 14.0 in</td><td class="num">10.4 × 14.0 in</td><td class="src">estimated</td></tr>
-        <tr><td>Stacking foot</td><td class="num">10.28 × 13.88 × 0.25 in</td><td class="num">10.28 × 13.88 × 0.25 in</td><td class="src">estimated</td></tr>
-        <tr><td>Hand grips (15″ ends)</td><td class="num">5.5 × 1.0 × 0.4 in</td><td class="num">5.5 × 1.0 × 0.4 in</td><td class="src">estimated</td></tr>
+        <tr><td>Inside opening at rim</td><td class="num">10.5 × 14.1 in</td><td class="num">10.5 × 14.1 in</td><td class="src">estimated</td></tr>
+        <tr><td>Wall / floor thickness</td><td class="num">0.10 / 0.12 in</td><td class="num">0.10 / 0.12 in</td><td class="src">estimated</td></tr>
+        <tr><td>Top bumper (deck + skirt)</td><td class="num">0.55 in deep</td><td class="num">0.55 in deep</td><td class="src">estimated</td></tr>
+        <tr><td>Stacking foot</td><td class="num">10.3 × 13.9 × 0.3 in</td><td class="num">10.3 × 13.9 × 0.3 in</td><td class="src">estimated</td></tr>
+        <tr><td>External ribs</td><td class="num">18 tapered, 0.12 in</td><td class="num">18 tapered, 0.12 in</td><td class="src">estimated</td></tr>
+        <tr><td>Fingertip handles</td><td class="num">4 · 5.5 / 5.0 in wide</td><td class="num">4 · 5.5 / 5.0 in wide</td><td class="src">estimated</td></tr>
+        <tr><td>Drain slots</td><td class="num">3 per handle, 8 in bumper</td><td class="num">3 per handle, 8 in bumper</td><td class="src">estimated</td></tr>
+        <tr><td>Modeled weight (HDPE)</td><td class="num">1.90 lb</td><td class="num">2.77 lb</td><td class="src">computed</td></tr>
       </tbody>
     </table>
   </div>
 
-  <p class="note">Outside size, floor size and clearance follow the published ORBIS figures. The rim, ribs, stacking foot, hand grips and label pads are estimated from product photos, and the walls are modeled solid rather than cored, so these models suit fit checks, layouts and renders but are not ORBIS tooling data. STEP and STL files (in millimetres) and the CadQuery source sit next to this page in the <code>orbis-totes</code> folder of the repository.</p>
+  <p class="note">Outside size, floor size and clearance follow the published ORBIS figures. The rest is modeled as a thin-wall molding from the features ORBIS lists: reinforced external ribbing, fingertip handles, a continuous top bumper, textured label areas, and drain holes in the handles and bumper. Those feature sizes are estimates, so use these models for fit checks, layouts and renders, not as ORBIS tooling data. STEP and STL files (in millimetres) and the CadQuery source are in the <code>orbis-totes</code> folder of the repository.</p>
 </div>
 
 <script type="importmap">
@@ -121,6 +129,7 @@ stage.prepend(renderer.domElement);
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 500);
+camera.up.set(0, 0, 1);  // Z-up; must be set before OrbitControls reads it
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
@@ -138,7 +147,13 @@ const load = (name) => new Promise((res, rej) => loader.load(name, (g) => {
   g.scale(1 / IN, 1 / IN, 1 / IN); g.computeVertexNormals(); res(new THREE.Mesh(g, material));
 }, undefined, rej));
 
-let mode = "both";
+let mode = "both", view = "iso";
+const VIEWS = {
+  iso: new THREE.Vector3(0.55, -0.75, 0.48),
+  end: new THREE.Vector3(1, -0.02, 0.12),
+  side: new THREE.Vector3(0.02, -1, 0.12),
+  under: new THREE.Vector3(0.35, -0.45, -0.85),
+};
 function layout() {
   const m5 = meshes[5], m7 = meshes[7];
   if (!m5) return;
@@ -161,8 +176,8 @@ function frame() {
   const c = box.getCenter(new THREE.Vector3()), r = box.getSize(new THREE.Vector3()).length() / 2;
   controls.target.copy(c);
   const dist = r / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.05;
-  camera.up.set(0, 0, 1);
-  camera.position.copy(c).add(new THREE.Vector3(0.55, -0.75, 0.48).normalize().multiplyScalar(dist));
+  grid.visible = view !== "under";
+  camera.position.copy(c).add(VIEWS[view].clone().normalize().multiplyScalar(dist));
   controls.update();
 }
 function resize() {
@@ -181,7 +196,9 @@ document.querySelectorAll("[data-color]").forEach((b) => b.addEventListener("cli
 document.getElementById("wire").addEventListener("click", (e) => {
   material.wireframe = !material.wireframe; e.currentTarget.setAttribute("aria-pressed", String(material.wireframe));
 });
-document.getElementById("reset").addEventListener("click", frame);
+document.querySelectorAll("[data-view]").forEach((b) => b.addEventListener("click", () => {
+  view = b.dataset.view; press("[data-view]", b); frame();
+}));
 
 (function tick() { controls.update(); renderer.render(scene, camera); requestAnimationFrame(tick); })();
 
