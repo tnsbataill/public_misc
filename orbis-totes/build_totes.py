@@ -3,13 +3,15 @@
 Published specs (ORBIS / distributors):
   NXO1215-5: outside 12" L x 15" W x 5" H,   inside bottom 9.4" x 13", product clearance 4.4", 1.8 lb
   NXO1215-7: outside 12" L x 15" W x 7.5" H, inside bottom 9.4" x 13", product clearance 6.8", 2.3 lb
-  Features: reinforced external ribbing, fingertip handles, molded-in continuous bumper,
-  textured label areas, drain holes in the bumper and handles.
+  Features: vertical (straight) sides, reinforced external ribbing, fingertip handles,
+  molded-in continuous bumper, textured label areas, drain holes in the bumper and handles.
 
-The part is modeled as a thin-wall HDPE molding: a drafted inner bin, a top bumper channel
-(open underneath), a stacking foot band, tapered external ribs that tie the foot to the
-bumper, fingertip handle pockets on all four sides, and textured label pads on the 15" sides.
-Feature sizes not in the spec sheet are estimates, not ORBIS CAD data. Output is in millimetres.
+The part is modeled as a thin-wall HDPE molding: vertical side walls just inside a top bumper
+channel (open underneath), vertical external ribs, a belt rib at the stacking line, and a
+beveled base that drops inside the rim of the tote below. The bevel is what makes the inside
+floor (9.4" x 13") smaller than the opening. Fingertip handle pockets sit on all four sides
+and textured label pads on the 15" sides. Feature sizes not in the spec sheet are estimates,
+not ORBIS CAD data. Output is in millimetres.
 
 Usage: python build_totes.py   -> writes STEP + STL for each model into ./models
 """
@@ -25,23 +27,25 @@ HDPE = 0.0347         # lb per cubic inch, for the weight check
 L, W = 12.0, 15.0
 T = 0.10              # nominal wall thickness
 FLOOR_T = 0.12
-BOTTOM_IN = (9.4, 13.0, 0.6)   # inside floor L, W, corner radius (published size)
-TOP_IN = (10.5, 14.1, 0.75)    # inside opening at the rim
-CORNER_R = 0.6                 # bumper outside corner radius
+CORNER_R = 0.6        # bumper outside corner radius
+
+WALL = (11.6, 14.6, 0.5)       # vertical wall, outside L, W, corner radius
+BOTTOM_IN = (9.4, 13.0, 0.4)   # inside floor (published size)
+BASE_OUT = (BOTTOM_IN[0] + 2 * T, BOTTOM_IN[1] + 2 * T, BOTTOM_IN[2] + T)  # bottom of the bevel
+BEVEL_TOP = (11.3, 14.3, 0.55) # top of the base bevel; fits inside the rim opening below
 
 BUMPER_H = 0.55       # continuous bumper: deck plus downturned skirt
 DECK_T = 0.13
-FOOT = (10.3, 13.9, 0.6)       # stacking foot band, drops inside the rim of the tote below
-FOOT_H = 0.3
+BELT_H = 0.15         # belt rib at the stacking line
+BELT = (L - 0.1, W - 0.1, CORNER_R - 0.05)
 
 RIB_T = 0.12
-RIB_LAND = 0.2        # rib toe sticks out past the foot so the ribs land on the lower tote's bumper
-X_FACE_RIBS = (-5.6, -3.7, 0.0, 3.7, 5.6)   # y positions on the 12"-wide ends (0 runs under the handle)
-Y_FACE_RIBS = (-3.3, 3.3)                     # x positions on the 15"-long sides
+X_FACE_RIBS = (-5.4, -3.6, 0.0, 3.6, 5.4)   # y positions on the 12"-wide ends (0 runs under the handle)
+Y_FACE_RIBS = (-4.6, -3.0, 3.0, 4.6)        # x positions on the 15"-long sides
 
 GRIP = {"x": 5.5, "y": 5.0}   # fingertip handle width on the X faces / Y faces
 GRIP_H = 0.75         # finger opening height below the bumper skirt
-GRIP_BACK = (0.0, 0.15)  # how far the pocket reaches behind the wall line (ends, sides)
+GRIP_BACK = 0.45      # how far the pocket reaches behind the wall line
 DRAIN = (0.5, 0.14)   # drain slot length x width
 
 PAD_W, PAD_T = 4.6, 0.035      # textured label pad on the Y faces
@@ -82,101 +86,67 @@ def orient(axis, sign, n0, n1, t0, t1, z0, z1):
 
 def build(height, clearance):
     H = height
-    floor_z = H - clearance - FOOT_H      # a stacked tote's foot takes FOOT_H of the opening
-    depth = H - floor_z
-    slope = [(TOP_IN[i] - BOTTOM_IN[i]) / 2 / depth for i in (0, 1)]
-
-    def wall_out(axis, z):
-        """Outer surface of the drafted wall, as distance from centre."""
-        return BOTTOM_IN[axis] / 2 + T + slope[axis] * (z - floor_z)
-
+    floor_z = FLOOR_T
+    stack_z = H - clearance - floor_z     # the base below this line drops into the tote underneath
     half = (L / 2, W / 2)
+    wall = (WALL[0] / 2, WALL[1] / 2)
     z_skirt = H - BUMPER_H               # underside of the bumper skirt
     z_deck = H - DECK_T                  # underside of the bumper deck
+    grip_bottom = z_skirt - GRIP_H - T
 
-    # Drafted bin: outer loft minus the cavity loft leaves walls of T and a floor of FLOOR_T.
-    zb = floor_z - FLOOR_T
-    outer_b = tuple(wall_out(i, zb) * 2 for i in (0, 1)) + (BOTTOM_IN[2] + T,)
-    outer_t = tuple(wall_out(i, H) * 2 for i in (0, 1)) + (TOP_IN[2] + T,)
-    tote = rr_loft(outer_b, outer_t, zb, H)
+    # Shell: beveled base up to the stacking line, then vertical walls to the top.
+    tote = rr_loft(BASE_OUT, BEVEL_TOP, 0, stack_z).union(rr_slab(*WALL, stack_z, H))
 
     # Continuous bumper: full-footprint deck with a skirt turned down around the outside.
     tote = tote.union(rr_slab(L, W, CORNER_R, z_deck, H))
     skirt = rr_slab(L, W, CORNER_R, z_skirt, H).cut(rr_slab(L - 2 * T, W - 2 * T, CORNER_R - T, z_skirt - 1, H + 1))
     tote = tote.union(skirt)
 
-    # Stacking foot: a band of wall around the base, capped by a deck that ties into the bin.
-    foot = rr_slab(*FOOT[:2], FOOT[2], 0, FOOT_H).cut(
-        rr_slab(FOOT[0] - 2 * T, FOOT[1] - 2 * T, FOOT[2] - T, -1, FOOT_H - T))
-    tote = tote.union(foot)
+    # Belt rib at the stacking line. It also closes the step between the bevel and the wall.
+    belt = rr_slab(*BELT, stack_z - 0.1, stack_z + BELT_H).cut(
+        rr_slab(BEVEL_TOP[0] - 0.3, BEVEL_TOP[1] - 0.3, 0.4, stack_z - 1, H))
+    tote = tote.union(belt)
 
-    # Underside grid ribs under the floor.
-    grid = None
-    fx, fy = FOOT[0] / 2 - T, FOOT[1] / 2 - T
-    for gx in (-3.0, 0.0, 3.0):
-        g = box(gx - 0.05, gx + 0.05, -fy, fy, 0, FOOT_H - T + 0.01)
-        grid = g if grid is None else grid.union(g)
-    for gy in (-4.5, -1.5, 1.5, 4.5):
-        grid = grid.union(box(-fx, fx, gy - 0.05, gy + 0.05, 0, FOOT_H - T + 0.01))
-    tote = tote.union(grid)
-
-    # Tapered external ribs from the foot to the bumper. The toe overhangs the foot so a
-    # stacked tote rests on the bumper deck of the one below.
-    grip_bottom = z_skirt - GRIP_H - T
-
-    def rib(axis, sign, t_pos, z_top, out_top):
-        z0 = FOOT_H - 0.01
-        n_in0, n_in1 = wall_out(axis, z0) - 0.05, wall_out(axis, z_top) - 0.05
-        n_out0 = FOOT[axis] / 2 + RIB_LAND
-        pts = [(n_in0, z0), (n_out0, z0), (out_top, z_top), (n_in1, z_top)]
-        pts = [(sign * n, z) for n, z in pts]
-        plane = "XZ" if axis == 0 else "YZ"
-        r = cq.Workplane(plane).polyline(pts).close().extrude(RIB_T / 2, both=True)
-        return r.translate((0, t_pos, 0) if axis == 0 else (t_pos, 0, 0))
+    # Vertical external ribs from the belt to the bumper deck.
+    def rib(axis, sign, t_pos, z0, z1):
+        return orient(axis, sign, wall[axis] - 0.05, half[axis] - 0.02, t_pos - RIB_T / 2, t_pos + RIB_T / 2, z0, z1)
 
     for axis, sign in faces():
-        positions = X_FACE_RIBS if axis == 0 else Y_FACE_RIBS
-        for p in positions:
-            if p == 0.0:   # short rib that carries the handle housing
-                tote = tote.union(rib(axis, sign, p, grip_bottom + 0.02, half[axis] - 0.02))
-            else:
-                tote = tote.union(rib(axis, sign, p, z_deck + 0.02, half[axis] - 0.02))
+        for p in (X_FACE_RIBS if axis == 0 else Y_FACE_RIBS):
+            z1 = grip_bottom + 0.02 if p == 0.0 else z_deck + 0.02   # centre rib carries the handle
+            tote = tote.union(rib(axis, sign, p, stack_z, z1))
 
-    # Corner ribs on the diagonals. The wall corners all lie in one vertical plane per corner
-    # (draft is equal on both axes), so each rib is drawn in that plane.
-    r0, r1 = BOTTOM_IN[2] + T, TOP_IN[2] + T
-    k = 1 - 1 / math.sqrt(2)
-
-    def corner_pt(z, sx, sy):
-        r = r0 + (r1 - r0) * (z - zb) / (H - zb)
-        return cq.Vector(sx * (wall_out(0, z) - r * k), sy * (wall_out(1, z) - r * k), 0)
-
+    # Corner ribs on the diagonals. Wall and bumper corners share a diagonal, so each rib is
+    # a plain box rotated 45 degrees.
+    k = 1 / math.sqrt(2)
+    s_in = WALL[2] - 0.05
+    s_out = WALL[2] + (half[0] - wall[0]) * math.sqrt(2) - 0.05
     for sx in (1, -1):
         for sy in (1, -1):
-            u = cq.Vector(sx, sy, 0).normalized()
-            z0, z1 = FOOT_H - 0.01, z_deck + 0.02
-            q = corner_pt(0, sx, sy)
-            s_of = lambda pt: (pt - q).dot(u)
-            foot_c = cq.Vector(sx * (FOOT[0] / 2 - FOOT[2] * k), sy * (FOOT[1] / 2 - FOOT[2] * k), 0)
-            bump_c = cq.Vector(sx * (L / 2 - CORNER_R * k), sy * (W / 2 - CORNER_R * k), 0)
-            pts = [(s_of(corner_pt(z0, sx, sy)) - 0.05, z0), (s_of(foot_c) + RIB_LAND, z0),
-                   (s_of(bump_c) - 0.1, z1), (s_of(corner_pt(z1, sx, sy)) - 0.05, z1)]
-            plane = cq.Plane(origin=q, xDir=u, normal=u.cross(cq.Vector(0, 0, 1)))
-            tote = tote.union(cq.Workplane(plane).polyline(pts).close().extrude(RIB_T / 2, both=True))
+            c = cq.Vector(sx * (wall[0] - WALL[2]), sy * (wall[1] - WALL[2]), 0)
+            r = (cq.Workplane("XY").box(s_out - s_in, RIB_T, z_deck + 0.02 - stack_z)
+                 .translate(((s_in + s_out) / 2, 0, (stack_z + z_deck + 0.02) / 2))
+                 .rotate((0, 0, 0), (0, 0, 1), math.degrees(math.atan2(sy, sx)))
+                 .translate(c))
+            tote = tote.union(r)
 
-    # Inner cavity.
-    cavity = rr_loft(BOTTOM_IN, TOP_IN, floor_z, H + 0.01)
+    # Inner cavity: bevel inside the base, vertical above. A small shelf is left at the
+    # stacking line where the two meet.
+    inner_wall = (WALL[0] - 2 * T, WALL[1] - 2 * T, WALL[2] - T)
+    bevel_in = (BEVEL_TOP[0] - 2 * T, BEVEL_TOP[1] - 2 * T, BEVEL_TOP[2] - T)
+    cavity = rr_loft(BOTTOM_IN, bevel_in, floor_z, stack_z + 0.001)
     try:
-        cavity = cavity.faces("<Z").edges().fillet(0.15)
+        cavity = cavity.faces("<Z").edges().fillet(0.12)
     except Exception:
         pass
+    cavity = cavity.union(rr_slab(*inner_wall, stack_z, H + 0.01))
     tote = tote.cut(cavity)
 
     # Fingertip handles on all four sides: a housing that bulges into the bin, a rounded
     # finger pocket under the bumper deck, and drain slots through the pocket floor.
     for axis, sign in faces():
         w = GRIP["x"] if axis == 0 else GRIP["y"]
-        n_back = wall_out(axis, z_deck) - T - GRIP_BACK[axis]
+        n_back = wall[axis] - T - GRIP_BACK
         housing = orient(axis, sign, n_back - T, half[axis] - 0.02, -w / 2 - T, w / 2 + T, grip_bottom, z_deck + 0.01)
         tote = tote.union(housing)
         pocket = orient(axis, sign, n_back, half[axis] + 0.5, -w / 2, w / 2, grip_bottom + T, z_deck)
@@ -191,26 +161,22 @@ def build(height, clearance):
                           tp - DRAIN[0] / 2, tp + DRAIN[0] / 2, grip_bottom - 0.1, grip_bottom + T + 0.05)
             tote = tote.cut(slot)
 
-    # Drain notches in the bumper skirt at each corner run.
+    # Drain notches in the bumper skirt between the ribs.
     for axis, sign in faces():
-        for tp in ((-4.6, 4.6) if axis == 0 else (-4.8, 4.8)):
+        for tp in ((-4.5, 4.5) if axis == 0 else (-3.8, 3.8)):
             tote = tote.cut(orient(axis, sign, half[axis] - T - 0.05, half[axis] + 0.05, tp - 0.2, tp + 0.2,
                                    z_skirt - 0.01, z_skirt + 0.12))
 
-    # Textured label pads on the 15" sides: a thin raised panel following the wall draft,
-    # with fine horizontal grooves for the label-release texture.
-    pad_z0, pad_z1 = FOOT_H + 0.35, grip_bottom - 0.3
+    # Textured label pads on the 15" sides: a thin raised panel with fine horizontal grooves.
+    pad_z0, pad_z1 = stack_z + BELT_H + 0.3, grip_bottom - 0.25
     if pad_z1 - pad_z0 > 0.8:
-        grown = rr_loft((outer_b[0] + 2 * PAD_T, outer_b[1] + 2 * PAD_T, outer_b[2] + PAD_T),
-                        (outer_t[0] + 2 * PAD_T, outer_t[1] + 2 * PAD_T, outer_t[2] + PAD_T), zb, H)
         for sign in (1, -1):
-            region = orient(1, sign, 0, half[1], -PAD_W / 2, PAD_W / 2, pad_z0, pad_z1)
-            pad = grown.intersect(region).cut(rr_loft(outer_b, outer_t, zb, H))
+            pad = orient(1, sign, wall[1] - 0.01, wall[1] + PAD_T, -PAD_W / 2, PAD_W / 2, pad_z0, pad_z1)
             grooves = None
             z = pad_z0 + 0.12
             while z < pad_z1 - 0.12:
-                n = wall_out(1, z) + PAD_T - GROOVE_D
-                g = orient(1, sign, n, n + 0.2, -PAD_W / 2 + 0.12, PAD_W / 2 - 0.12, z - GROOVE_H / 2, z + GROOVE_H / 2)
+                g = orient(1, sign, wall[1] + PAD_T - GROOVE_D, wall[1] + 0.2,
+                           -PAD_W / 2 + 0.12, PAD_W / 2 - 0.12, z - GROOVE_H / 2, z + GROOVE_H / 2)
                 grooves = g if grooves is None else grooves.union(g)
                 z += GROOVE_PITCH
             tote = tote.union(pad.cut(grooves))
